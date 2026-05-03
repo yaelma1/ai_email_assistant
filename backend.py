@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -9,6 +10,21 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 client = Anthropic()
+
+USAGE_LIMIT = 200
+USAGE_FILE = "usage.json"
+
+def get_usage():
+    if os.path.exists(USAGE_FILE):
+        with open(USAGE_FILE) as f:
+            return json.load(f).get("count", 0)
+    return 0
+
+def increment_usage():
+    count = get_usage() + 1
+    with open(USAGE_FILE, "w") as f:
+        json.dump({"count": count}, f)
+    return count
 
 
 @app.route("/")
@@ -95,8 +111,17 @@ Before finalizing the answer, verify that:
 * The three versions are meaningfully different from each other."""
 
 
+@app.route("/usage", methods=["GET"])
+def usage():
+    count = get_usage()
+    return jsonify({"used": count, "limit": USAGE_LIMIT, "remaining": USAGE_LIMIT - count})
+
+
 @app.route("/generate", methods=["POST"])
 def generate():
+    if get_usage() >= USAGE_LIMIT:
+        return jsonify({"error": "Usage limit reached. No more generations available."}), 429
+
     data = request.json
 
     recipient = data.get("recipient", "")
@@ -121,6 +146,7 @@ Key points to include:
         ]
     )
 
+    increment_usage()
     email_text = message.content[0].text
     return jsonify({"email": email_text})
 

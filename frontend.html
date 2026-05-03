@@ -602,6 +602,10 @@
           })
         });
 
+        if (res.status === 429) {
+          const data = await res.json();
+          throw new Error(data.error || "Usage limit reached.");
+        }
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
 
         const data = await res.json();
@@ -634,7 +638,9 @@
         resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
       } catch (err) {
-        errorText.textContent = "Could not connect to the server. Make sure backend.py is running on port 5000.";
+        errorText.textContent = err.message.startsWith("Usage limit")
+          ? err.message
+          : "Could not connect to the server. Make sure backend.py is running on port 5000.";
         errorEl.style.display = "flex";
       } finally {
         btn.disabled = false;
