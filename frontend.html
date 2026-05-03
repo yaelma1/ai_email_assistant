@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workplace Email Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --primary-glow: rgba(79,70,229,0.18);
+      --accent: #7c3aed;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── Header ── */
+    .hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6d28d9 100%);
+      padding: 52px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.06) 0%, transparent 50%);
+    }
+
+    .hero-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      display: block;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .hero p {
+      color: rgba(255,255,255,0.78);
+      font-size: 0.98rem;
+      font-weight: 400;
+      position: relative;
+    }
+
+    /* ── Main layout ── */
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.07);
+      padding: 32px;
+      margin-top: -28px;
+      position: relative;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    /* ── Grid ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 540px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── Form fields ── */
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .optional {
+      font-weight: 400;
+      color: var(--text-light);
+      font-size: 0.75rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafbfc;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--text-light); }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3.5px var(--primary-glow);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 88px;
+      line-height: 1.55;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.18s, transform 0.15s, box-shadow 0.18s;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.93;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #fff5f5;
+      border: 1px solid #fecaca;
+      color: var(--error);
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+
+    /* ── Results ── */
+    .results-section {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .results-header h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .badge-new {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Version tabs ── */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 18px;
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -1.5px;
+      transition: color 0.15s, border-color 0.15s;
+      border-radius: 0;
+      box-shadow: none;
+      width: auto;
+      letter-spacing: 0;
+    }
+
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-btn.recommended-tab::after {
+      content: '★';
+      margin-left: 5px;
+      color: #f59e0b;
+      font-size: 0.72rem;
+    }
+
+    /* ── Email card ── */
+    .version-panel { display: none; }
+    .version-panel.active { display: block; }
+
+    .email-card {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .email-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .version-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      width: auto;
+      box-shadow: none;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .email-body {
+      padding: 20px;
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: inherit;
+    }
+
+    /* ── Recommendation box ── */
+    .recommendation {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #fef9ec, #fffbf0);
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: #78350f;
+      line-height: 1.6;
+    }
+
+    .recommendation strong {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #b45309;
+      margin-bottom: 4px;
+    }
+
+    /* ── Raw fallback ── */
+    .raw-result {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <span class="hero-icon">✉️</span>
+    <h1>Workplace Email Assistant</h1>
+    <p>Describe your email need and get 3 polished versions instantly.</p>
+  </div>
+
+  <div class="page">
+    <div class="card">
+      <p class="card-title">Email Details</p>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="recipient">Recipient</label>
+          <select id="recipient">
+            <option value="">Select recipient...</option>
+            <option value="client">Client</option>
+            <option value="manager / senior manager">Manager / Senior Manager</option>
+            <option value="colleague">Colleague</option>
+            <option value="team">Team</option>
+            <option value="supplier">Supplier</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tone">Preferred Tone <span class="optional">(optional)</span></label>
+          <select id="tone">
+            <option value="">Let assistant decide</option>
+            <option value="formal">Formal</option>
+            <option value="friendly">Friendly</option>
+            <option value="direct">Direct</option>
+            <option value="apologetic">Apologetic</option>
+            <option value="persuasive">Persuasive</option>
+            <option value="diplomatic">Diplomatic</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="purpose">Purpose</label>
+        <input id="purpose" type="text" placeholder="e.g. Apologize for a delay, Request approval, Send a follow-up...">
+      </div>
+
+      <div class="field">
+        <label for="context">Context <span class="optional">(optional)</span></label>
+        <textarea id="context" placeholder="Background info: project name, what happened, deadlines, prior conversations..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="key_points">Key Points to Include <span class="optional">(optional)</span></label>
+        <textarea id="key_points" placeholder="- Point 1&#10;- Point 2&#10;- Point 3"></textarea>
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="btn" id="generateBtn" onclick="send()">
+        <span>✦</span> Generate Email Versions
+      </button>
+
+      <div class="error-msg" id="error">
+        <span>⚠</span> <span id="error-text"></span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="result-section">
+      <div class="card">
+        <div class="results-header">
+          <h2>Your Email Versions</h2>
+          <span class="badge-new">Ready</span>
+        </div>
+
+        <div class="tabs" id="tabs"></div>
+        <div id="panels"></div>
+        <div class="recommendation" id="recommendation">
+          <strong>★ Recommended</strong>
+          <span id="recommendation-text"></span>
+        </div>
+
+        <div class="raw-result" id="raw-result" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const LABELS = [
+      "Version 1: Formal & Professional",
+      "Version 2: Friendly & Professional",
+      "Version 3: Concise & Direct"
+    ];
+
+    const SHORT_LABELS = ["Formal", "Friendly", "Concise"];
+
+    function parseVersions(text) {
+      const versions = [];
+      const patterns = [
+        /version\s*1[:\s–-]+formal[^]*?(?=version\s*2|$)/i,
+        /version\s*2[:\s–-]+friendly[^]*?(?=version\s*3|$)/i,
+        /version\s*3[:\s–-]+concise[^]*?(?=recommended\s*version|---\s*recommended|$)/i
+      ];
+
+      for (const pat of patterns) {
+        const m = text.match(pat);
+        versions.push(m ? m[0].replace(/^version\s*\d[:\s–-]+\w[^\n]*/i, '').trim() : null);
+      }
+
+      const recMatch = text.match(/recommended\s*version[:\s–-]+([\s\S]+)/i);
+      const recommendation = recMatch ? recMatch[1].trim() : null;
+
+      return { versions, recommendation };
+    }
+
+    function buildTabs(versions, recommendedIndex) {
+      const tabsEl = document.getElementById("tabs");
+      const panelsEl = document.getElementById("panels");
+      tabsEl.innerHTML = '';
+      panelsEl.innerHTML = '';
+
+      versions.forEach((content, i) => {
+        const isRec = i === recommendedIndex;
+
+        const tab = document.createElement("button");
+        tab.className = "tab-btn" + (i === 0 ? " active" : "") + (isRec ? " recommended-tab" : "");
+        tab.textContent = SHORT_LABELS[i];
+        tab.onclick = () => switchTab(i);
+        tabsEl.appendChild(tab);
+
+        const panel = document.createElement("div");
+        panel.className = "version-panel" + (i === 0 ? " active" : "");
+        panel.id = "panel-" + i;
+        panel.innerHTML = `
+          <div class="email-card">
+            <div class="email-card-header">
+              <span class="version-label">${LABELS[i]}</span>
+              <button class="copy-btn" onclick="copyVersion(${i})">
+                <span>⎘</span> Copy
+              </button>
+            </div>
+            <pre class="email-body" id="email-body-${i}">${escapeHtml(content)}</pre>
+          </div>`;
+        panelsEl.appendChild(panel);
+      });
+    }
+
+    function switchTab(index) {
+      document.querySelectorAll(".tab-btn").forEach((t, i) => t.classList.toggle("active", i === index));
+      document.querySelectorAll(".version-panel").forEach((p, i) => p.classList.toggle("active", i === index));
+    }
+
+    function copyVersion(index) {
+      const text = document.getElementById("email-body-" + index).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btns = document.querySelectorAll(".copy-btn");
+        const btn = btns[index];
+        btn.classList.add("copied");
+        btn.innerHTML = "<span>✓</span> Copied!";
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          btn.innerHTML = "<span>⎘</span> Copy";
+        }, 2000);
+      });
+    }
+
+    function guessRecommended(text) {
+      const m = text.match(/recommended.*?version\s*(\d)/i);
+      if (m) return parseInt(m[1]) - 1;
+      if (/version\s*2/i.test(text.match(/recommended[\s\S]{0,200}/i)?.[0] || '')) return 1;
+      return -1;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    async function send() {
+      const btn = document.getElementById("generateBtn");
+      const errorEl = document.getElementById("error");
+      const errorText = document.getElementById("error-text");
+      const resultSection = document.getElementById("result-section");
+
+      errorEl.style.display = "none";
+      resultSection.style.display = "none";
+
+      const purpose = document.getElementById("purpose").value.trim();
+      if (!purpose) {
+        errorText.textContent = "Please describe the purpose of the email.";
+        errorEl.style.display = "flex";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+      try {
+        const res = await fetch("http://localhost:5000/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipient: document.getElementById("recipient").value,
+            purpose,
+            context: document.getElementById("context").value.trim(),
+            tone: document.getElementById("tone").value,
+            key_points: document.getElementById("key_points").value.trim()
+          })
+        });
+
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+        const data = await res.json();
+        const rawText = data.email;
+
+        const { versions, recommendation } = parseVersions(rawText);
+        const hasVersions = versions.some(v => v && v.length > 20);
+
+        resultSection.style.display = "block";
+
+        if (hasVersions) {
+          document.getElementById("raw-result").style.display = "none";
+          const recIndex = guessRecommended(rawText);
+          buildTabs(versions.map(v => v || "(No content parsed)"), recIndex);
+
+          const recEl = document.getElementById("recommendation");
+          const recText = document.getElementById("recommendation-text");
+          if (recommendation) {
+            recText.textContent = recommendation;
+            recEl.style.display = "block";
+          }
+        } else {
+          document.getElementById("tabs").innerHTML = '';
+          document.getElementById("panels").innerHTML = '';
+          const raw = document.getElementById("raw-result");
+          raw.textContent = rawText;
+          raw.style.display = "block";
+        }
+
+        resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      } catch (err) {
+        errorText.textContent = "Could not connect to the server. Make sure backend.py is running on port 5000.";
+        errorEl.style.display = "flex";
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✦</span> Generate Email Versions';
+      }
+    }
+  </script>
+</body>
+</html>
