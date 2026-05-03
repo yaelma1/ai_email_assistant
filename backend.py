@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -6,11 +7,13 @@ from anthropic import Anthropic
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
+client = Anthropic()
+
+
 @app.route("/")
 def home():
     return send_from_directory(".", "frontend.html")
-CORS(app)
-client = Anthropic()
 
 SYSTEM_PROMPT = """# Workplace English Email Assistant
 
@@ -123,4 +126,5 @@ Key points to include:
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
