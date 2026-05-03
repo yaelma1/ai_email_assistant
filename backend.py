@@ -92,7 +92,11 @@ Recommended Version:
 * Always write the email versions in English.
 * Do not include unnecessary explanations unless they help the user choose between versions.
 * Do not invent specific names, dates, prices, commitments, or promises unless the user provided them.
-* If important information is missing, use natural generic phrasing instead of stopping.
+* If the input is unclear, do NOT ask clarification questions.
+Do NOT analyze possible meanings.
+Do NOT explain what the user may have meant.
+Instead, generate a professional generic workplace email using the available information.
+If a detail is missing, use neutral placeholders such as [Recipient Name], [Project Name], or [Date].
 * Use placeholders only when absolutely necessary, such as [Recipient Name], [Date], or [Project Name].
 * Keep emails professional, respectful, and culturally appropriate for international business communication.
 * Avoid slang, overly casual expressions, and aggressive language.
@@ -108,7 +112,14 @@ Before finalizing the answer, verify that:
 * The message is not too long for the situation.
 * The email includes a useful subject line.
 * The email does not add facts the user did not provide.
-* The three versions are meaningfully different from each other."""
+* The three versions are meaningfully different from each other.
+
+IMPORTANT:
+Your output must contain ONLY the final email versions.
+Do not include analysis.
+Do not include clarification questions.
+Do not include tables.
+Do not include markdown symbols like **, ##, or >."""
 
 
 @app.route("/usage", methods=["GET"])
