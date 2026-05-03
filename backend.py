@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from anthropic import Anthropic
@@ -6,6 +6,9 @@ from anthropic import Anthropic
 load_dotenv()
 
 app = Flask(__name__)
+@app.route("/")
+def home():
+    return send_from_directory(".", "frontend.html")
 CORS(app)
 client = Anthropic()
 
